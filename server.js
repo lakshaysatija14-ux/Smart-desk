@@ -1,6 +1,54 @@
 // ============================================================
-    //  UTILITIES
-    // ============================================================
+//  HARDWARE SYNC FUNCTION
+// ============================================================
+async function syncWithHardware(data) {
+    try {
+        await fetch('http://localhost:3001/api/data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+    } catch (e) {
+        console.error('Error syncing with hardware API:', e);
+    }
+}
+
+function syncTasks() {
+    const ul = document.getElementById('taskList');
+    if (!ul) return;
+    const tasksArray = Array.from(ul.querySelectorAll('.task-item')).map(li => ({
+        title: li.querySelector('.task-text') ? li.querySelector('.task-text').innerText : '',
+        done: li.classList.contains('done')
+    }));
+    syncWithHardware({ tasks: tasksArray });
+}
+
+function syncMessages() {
+    const msgListEl = document.getElementById('msgList');
+    if (!msgListEl) return;
+    const msgs = Array.from(msgListEl.querySelectorAll('.msg-item')).map(msg => ({
+        sender: msg.querySelector('.msg-name') ? msg.querySelector('.msg-name').innerText : '',
+        time: msg.querySelector('.msg-time') ? msg.querySelector('.msg-time').innerText : '',
+        text: msg.querySelector('.msg-text') ? msg.querySelector('.msg-text').innerText : '',
+        isDesk: msg.querySelector('.av-desk') ? true : false
+    }));
+    syncWithHardware({ deskMessages: msgs });
+}
+
+function syncCalendar() {
+    setTimeout(() => {
+        const events = Array.from(document.querySelectorAll('.cal-date.has-event')).map(cell => {
+            const dateNum = cell.childNodes[0] ? cell.childNodes[0].textContent.trim() : cell.textContent.trim();
+            const tags = Array.from(cell.querySelectorAll('.event-tag')).map(t => t.innerText);
+            return { date: parseInt(dateNum), events: tags };
+        });
+        syncWithHardware({ calendarEvents: events });
+    }, 50);
+}
+
+// ============================================================
+//  UTILITIES
+// ============================================================
     function getTimeStr() {
         const now = new Date();
         let h = now.getHours();
@@ -84,6 +132,12 @@
         msgList.innerHTML = '';
     });
 
+    // Start sync observation for Messages
+    const msgObserver = new MutationObserver(() => syncMessages());
+    if (msgList) {
+        msgObserver.observe(msgList, { childList: true, subtree: true });
+    }
+
     // ============================================================
     //  3. WEATHER SYSTEM  (OpenWeatherMap API)
     // ============================================================
@@ -149,6 +203,16 @@
                 <span>Humidity <b>${data.main.humidity}%</b></span> |
                 <span>Wind <b>${Math.round(data.wind.speed * 3.6)} km/h</b></span> |
                 <span>Feels <b>${Math.round(data.main.feels_like)}°</b></span>`;
+                
+            // SYNC NEW WEATHER TO HARDWARE
+            syncWithHardware({
+                weather: {
+                    temp: Math.round(data.main.temp),
+                    condition: desc.charAt(0).toUpperCase() + desc.slice(1),
+                    humidity: data.main.humidity,
+                    city: data.name
+                }
+            });
         } catch (err) {
             alert('❌ Could not fetch weather. Check API key & internet.');
             weatherApiKey = '';   // reset so user can retry
@@ -244,6 +308,8 @@
         alarmInterval = setInterval(checkAlarm, 1000);
 
         alert(`✅ Alarm set for ${padTwo(h)}:${padTwo(m)} ${ap}`);
+        
+        syncWithHardware({ alarms: [`${padTwo(h)}:${padTwo(m)} ${ap}`] });
     });
 
     function checkAlarm() {
@@ -297,6 +363,8 @@
             tag.textContent = evtName.length > 12 ? evtName.slice(0, 11) + '…' : evtName;
             cell.appendChild(tag);
             tagIdx++;
+            
+            syncCalendar();
         });
     });
 
@@ -340,6 +408,13 @@
         document.querySelectorAll('.task-item.done').forEach(t => t.remove());
     });
 
+    // Start sync observation for Tasks
+    const taskObserver = new MutationObserver(() => syncTasks());
+    const ulList = document.getElementById('taskList');
+    if (ulList) {
+        taskObserver.observe(ulList, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    }
+
     // ============================================================
     //  7. QUOTE / INSPIRATION  ─ refresh button cycles quotes
     // ============================================================
@@ -372,6 +447,8 @@
             authorEl.textContent = `— ${QUOTES[quoteIdx].author}`;
             quoteEl.style.opacity  = '1';
             authorEl.style.opacity = '1';
+            
+            syncWithHardware({ quotes: `${QUOTES[quoteIdx].text} — ${QUOTES[quoteIdx].author}` });
         }, 350);
     });
 
