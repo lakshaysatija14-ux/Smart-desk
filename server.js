@@ -418,39 +418,33 @@ function syncCalendar() {
     // ============================================================
     //  7. QUOTE / INSPIRATION  ─ refresh button cycles quotes
     // ============================================================
-    const QUOTES = [
-        { text: "The secret of getting ahead is getting started.",            author: "Mark Twain" },
-        { text: "It always seems impossible until it's done.",                author: "Nelson Mandela" },
-        { text: "Don't watch the clock; do what it does. Keep going.",        author: "Sam Levenson" },
-        { text: "The future depends on what you do today.",                   author: "Mahatma Gandhi" },
-        { text: "Success is not final, failure is not fatal.",                author: "Winston Churchill" },
-        { text: "Believe you can and you're halfway there.",                  author: "Theodore Roosevelt" },
-        { text: "Act as if what you do makes a difference. It does.",         author: "William James" },
-        { text: "You are never too old to set another goal.",                 author: "C.S. Lewis" },
-        { text: "Energy and persistence conquer all things.",                 author: "Benjamin Franklin" },
-        { text: "Little by little, one travels far.",                         author: "J.R.R. Tolkien" },
-        { text: "What you do today can improve all your tomorrows.",          author: "Ralph Marston" },
-        { text: "Push yourself, because no one else is going to do it.",      author: "Unknown" },
-    ];
+    async function fetchQuote() {
+    try {
+        const res = await fetch("https://api.quotable.io/random");
+        const data = await res.json();
 
-    const quoteEl   = document.querySelector('.quote');
-    const authorEl  = document.querySelector('.author');
-    const refreshBtn = document.querySelector('.refresh-btn');
-    let quoteIdx = 0;
+        quoteEl.style.opacity = "0";
+        authorEl.style.opacity = "0";
 
-    refreshBtn.addEventListener('click', () => {
-        quoteIdx = (quoteIdx + 1) % QUOTES.length;
-        quoteEl.style.opacity  = '0';
-        authorEl.style.opacity = '0';
         setTimeout(() => {
-            quoteEl.textContent  = `"${QUOTES[quoteIdx].text}"`;
-            authorEl.textContent = `— ${QUOTES[quoteIdx].author}`;
-            quoteEl.style.opacity  = '1';
-            authorEl.style.opacity = '1';
-            
-            syncWithHardware({ quotes: `${QUOTES[quoteIdx].text} — ${QUOTES[quoteIdx].author}` });
-        }, 350);
-    });
+            quoteEl.textContent = `"${data.content}"`;
+            authorEl.textContent = `— ${data.author}`;
+
+            quoteEl.style.opacity = "1";
+            authorEl.style.opacity = "1";
+
+            syncWithHardware({
+                quotes: `${data.content} — ${data.author}`
+            });
+        }, 300);
+
+    } catch (err) {
+        console.log("Quote API error:", err);
+    }
+}
+
+// ✅ YE FUNCTION KE BAHAR HOGA
+refreshBtn.addEventListener('click', fetchQuote);
 
     // ============================================================
     //  8. NAV MENU  ─ active tab highlight
@@ -506,3 +500,5 @@ function syncCalendar() {
     });
     // ✅ AUTO WEATHER LOAD
     fetchWeather('Delhi');
+    // ✅ AUTO QUOTE LOAD
+    fetchQuote();
