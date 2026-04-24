@@ -386,58 +386,7 @@
                     <input type="text" id="taskInput" placeholder="Add a new task...">
                     <button class="btn-plus" onclick="addTask()"><i class="fa-solid fa-plus"></i></button>
                 </div>
-                <ul class="task-list" id="taskList">
-                    <li class="task-item done" onclick="toggleTask(this)">
-                        <div class="task-left">
-                            <div class="check-box"></div>
-                            <span class="task-text">Finish Website UI</span>
-                        </div>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <span class="task-time">10:00 AM</span>
-                            <button class="task-del" onclick="event.stopPropagation(); this.parentElement.parentElement.remove()"><i class="fa-regular fa-trash-can"></i></button>
-                        </div>
-                    </li>
-                    <li class="task-item" onclick="toggleTask(this)">
-                        <div class="task-left">
-                            <div class="check-box"></div>
-                            <span class="task-text">Deploy Backend</span>
-                        </div>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <span class="task-time">02:00 PM</span>
-                            <button class="task-del" onclick="event.stopPropagation(); this.parentElement.parentElement.remove()"><i class="fa-regular fa-trash-can"></i></button>
-                        </div>
-                    </li>
-                    <li class="task-item" onclick="toggleTask(this)">
-                        <div class="task-left">
-                            <div class="check-box"></div>
-                            <span class="task-text">College Assignment</span>
-                        </div>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <span class="task-time">04:00 PM</span>
-                            <button class="task-del" onclick="event.stopPropagation(); this.parentElement.parentElement.remove()"><i class="fa-regular fa-trash-can"></i></button>
-                        </div>
-                    </li>
-                    <li class="task-item" onclick="toggleTask(this)">
-                        <div class="task-left">
-                            <div class="check-box"></div>
-                            <span class="task-text">Read 20 Pages</span>
-                        </div>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <span class="task-time">07:30 PM</span>
-                            <button class="task-del" onclick="event.stopPropagation(); this.parentElement.parentElement.remove()"><i class="fa-regular fa-trash-can"></i></button>
-                        </div>
-                    </li>
-                    <li class="task-item done" onclick="toggleTask(this)">
-                        <div class="task-left">
-                            <div class="check-box"></div>
-                            <span class="task-text">Gym / Workout</span>
-                        </div>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <span class="task-time">06:30 AM</span>
-                            <button class="task-del" onclick="event.stopPropagation(); this.parentElement.parentElement.remove()"><i class="fa-regular fa-trash-can"></i></button>
-                        </div>
-                    </li>
-                </ul>
+                <ul class="task-list" id="taskList"></ul>
                 <div class="clear-btn" id="clearCompleted">Clear Completed</div>
             </div>
 
