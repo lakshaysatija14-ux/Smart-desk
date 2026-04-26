@@ -446,27 +446,6 @@
         </div>
 
     </div>
-    <script>
-async function fetchQuote() {
-  try {
-    const res = await fetch("https://api.quotable.io/random");
-    const data = await res.json();
-
-    document.querySelector(".quote").innerText = `"${data.content}"`;
-    document.querySelector(".author").innerText = `— ${data.author}`;
-  } catch (error) {
-    console.log("Quote error:", error);
-  }
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  fetchQuote();
-
-  const btn = document.querySelector(".refresh-btn");
-  if (btn) {
-    btn.addEventListener("click", fetchQuote);
-  }
-});
-</script>
+    <script src="server.js"></script>
 </body>
 </html>
