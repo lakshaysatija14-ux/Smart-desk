@@ -446,46 +446,6 @@
         </div>
 
     </div>
-    <script>
-document.addEventListener("DOMContentLoaded", function () {
-  async function fetchQuote() {
-    try {
-      const res = await fetch("https://api.quotable.io/random");
-
-      // check response
-      if (!res.ok) throw new Error("API failed");
-
-      const data = await res.json();
-
-      const quoteEl = document.querySelector(".quote");
-      const authorEl = document.querySelector(".author");
-
-      if (!quoteEl || !authorEl) {
-        console.log("Element not found");
-        return;
-      }
-
-      quoteEl.innerText = `"${data.content}"`;
-      authorEl.innerText = `— ${data.author}`;
-
-    } catch (error) {
-      console.log("ERROR:", error);
-
-      // fallback text
-      document.querySelector(".quote").innerText = "Failed to load quote 😢";
-      document.querySelector(".author").innerText = "";
-    }
-  }
-
-  // run once
-  fetchQuote();
-
-  // refresh button
-  const btn = document.querySelector(".refresh-btn");
-  if (btn) {
-    btn.addEventListener("click", fetchQuote);
-  }
-});
-</script>
+    <script src="server.js"></script>
 </body>
 </html>
