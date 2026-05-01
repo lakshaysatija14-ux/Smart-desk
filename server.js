@@ -89,30 +89,25 @@ function syncCalendar() {
     const sendBtn   = document.querySelector('.btn-send');
     const msgList   = document.getElementById('msgList');
 
-    function createMsgItem(name, avatarClass, text, time, isDesk) {
-        const div = document.createElement('div');
-        div.className = 'msg-item';
-        div.innerHTML = `
-            <div class="msg-avatar ${avatarClass}">${isDesk ? 'Desk' : 'You'}</div>
-            <div class="msg-content">
-                <div class="msg-head">
-                    <span class="msg-name">${name}</span>
-                    <span class="msg-time">${time}</span>
-                </div>
-                <div class="msg-text">${isDesk
-                    ? text + ' <i class="fa-solid fa-square-check" style="color:var(--green);"></i>'
-                    : text
-                }</div>
-            </div>`;
-        return div;
-    }
+ function createMsgItem(text) {
+    const div = document.createElement('div');
+    div.className = 'msg-item';
+
+    div.innerHTML = `
+        <div class="clean-msg">
+            ${text}
+        </div>
+    `;
+
+    return div;
+}
 
     function sendDeskMessage() {
         const text = sendInput.value.trim();
         if (!text) return;
 
         const t = getTimeStr();
-        msgList.appendChild(createMsgItem('You',  'av-you',  text,               t,     false));
+        msgList.appendChild(createMsgItem(text));
         msgList.scrollTop = msgList.scrollHeight;
 
         setTimeout(() => {
