@@ -253,6 +253,17 @@
             .row-1, .row-2 { grid-template-columns: 1fr; }
             .nav-menu { display: none; }
         }
+        .clean-msg {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 14px;
+  width: fit-content;
+  max-width: 70%;
+  font-size: 14px;
+  margin-left: auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
     </style>
 </head>
 <body>
@@ -397,37 +408,8 @@
                         <span class="view-all" id="clearMessages">Clear</span>
                     </div>
                     <div class="msg-list" id="msgList">
-                        <div class="msg-item">
-                            <div class="msg-avatar av-you">You</div>
-                            <div class="msg-content">
-                                <div class="msg-head"><span class="msg-name">You</span> <span class="msg-time">04:14 PM</span></div>
-                                <div class="msg-text">hii</div>
-                            </div>
-                        </div>
-                        <div class="msg-item">
-                            <div class="msg-avatar av-desk">Desk</div>
-                            <div class="msg-content">
-                                <div class="msg-head"><span class="msg-name">Desk</span> <span class="msg-time">04:14 PM</span></div>
-                                <div class="msg-text">Message received <i class="fa-solid fa-square-check" style="color: var(--green);"></i></div>
-                            </div>
-                        </div>
-                        <div class="msg-item">
-                            <div class="msg-avatar av-you">You</div>
-                            <div class="msg-content">
-                                <div class="msg-head"><span class="msg-name">You</span> <span class="msg-time">03:58 PM</span></div>
-                                <div class="msg-text">Back in 10 mins</div>
-                            </div>
-                        </div>
-                        <div class="msg-item">
-                            <div class="msg-avatar av-desk">Desk</div>
-                            <div class="msg-content">
-                                <div class="msg-head"><span class="msg-name">Desk</span> <span class="msg-time">03:58 PM</span></div>
-                                <div class="msg-text">Message received <i class="fa-solid fa-square-check" style="color: var(--green);"></i></div>
-                            </div>
-                        </div>
                     </div>
-                </div>
-
+                    </div> <!-- ✅ ye closing div add kar -->
                 <div class="card actions-card">
                     <div class="card-title"><i class="fa-solid fa-bolt"></i> Quick Actions</div>
                     <div class="action-grid">
