@@ -26,12 +26,13 @@ function syncTasks() {
 function syncMessages() {
     const msgListEl = document.getElementById('msgList');
     if (!msgListEl) return;
+
     const msgs = Array.from(msgListEl.querySelectorAll('.msg-item')).map(msg => ({
-        sender: msg.querySelector('.msg-name') ? msg.querySelector('.msg-name').innerText : '',
-        time: msg.querySelector('.msg-time') ? msg.querySelector('.msg-time').innerText : '',
-        text: msg.querySelector('.msg-text') ? msg.querySelector('.msg-text').innerText : '',
-        isDesk: msg.querySelector('.av-desk') ? true : false
+        text: msg.querySelector('.clean-msg') 
+            ? msg.querySelector('.clean-msg').innerText 
+            : ''
     }));
+
     syncWithHardware({ deskMessages: msgs });
 }
 
