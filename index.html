@@ -377,21 +377,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="cal-grid">
-                    <div class="cal-day-name">Sun</div><div class="cal-day-name">Mon</div><div class="cal-day-name">Tue</div><div class="cal-day-name">Wed</div><div class="cal-day-name">Thu</div><div class="cal-day-name">Fri</div><div class="cal-day-name">Sat</div>
-                    
-                    <div class="cal-date">29</div><div class="cal-date">30</div><div class="cal-date">31</div><div class="cal-date curr-month">1</div><div class="cal-date curr-month">2</div><div class="cal-date curr-month">3</div><div class="cal-date curr-month">4</div>
-                    <div class="cal-date curr-month" style="color: #ef4444;">5</div><div class="cal-date curr-month">6</div><div class="cal-date curr-month">7</div><div class="cal-date curr-month has-event">8</div><div class="cal-date curr-month">9</div><div class="cal-date curr-month">10</div><div class="cal-date curr-month">11</div>
-                    <div class="cal-date curr-month active" id="today-date">12</div>
-                    <div class="cal-date curr-month" style="position: relative;">13 <div class="event-tag tag-green">Project Meeting</div></div>
-                    <div class="cal-date curr-month">14</div>
-                    <div class="cal-date curr-month" style="position: relative;">15 <div class="event-tag tag-purple">Lab Submission</div></div>
-                    <div class="cal-date curr-month">16</div>
-                    <div class="cal-date curr-month" style="position: relative;">17 <div class="event-tag tag-orange">Study Session</div></div>
-                    <div class="cal-date curr-month">18</div>
-                    <div class="cal-date curr-month" style="color: #ef4444;">19</div><div class="cal-date curr-month">20</div><div class="cal-date curr-month">21</div><div class="cal-date curr-month">22</div><div class="cal-date curr-month">23</div><div class="cal-date curr-month">24</div><div class="cal-date curr-month">25</div>
-                    <div class="cal-date curr-month" style="color: #ef4444;">26</div><div class="cal-date curr-month">27</div><div class="cal-date curr-month">28</div><div class="cal-date curr-month">29</div><div class="cal-date curr-month">30</div><div class="cal-date">1</div><div class="cal-date">2</div>
-                </div>
+               <div class="cal-grid" id="calendarGrid"></div>
             </div>
 
             <div class="card todo-card">
@@ -434,6 +420,51 @@
 
     </div>
     <script src="server.js"></script>
+<script>
+const calendarGrid = document.getElementById("calendarGrid");
 
+function generateCalendar() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+
+    calendarGrid.innerHTML = "";
+
+    const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    days.forEach(day => {
+        calendarGrid.innerHTML += `<div class="cal-day-name">${day}</div>`;
+    });
+
+    for (let i = 0; i < firstDay; i++) {
+        calendarGrid.innerHTML += `<div class="cal-date"></div>`;
+    }
+
+    for (let d = 1; d <= totalDays; d++) {
+        const isToday = d === now.getDate() ? "active" : "";
+        calendarGrid.innerHTML += `
+            <div class="cal-date curr-month ${isToday}" data-date="${d}">
+                ${d}
+            </div>
+        `;
+    }
+}
+
+generateCalendar();
+
+document.addEventListener("click", function(e) {
+    if (e.target.classList.contains("cal-date")) {
+        const eventText = prompt("Enter Event:");
+        if (!eventText) return;
+
+        e.target.innerHTML += `
+            <div class="event-tag tag-green">${eventText}</div>
+        `;
+        e.target.classList.add("has-event");
+    }
+});
+</script>
 </body>
 </html>
