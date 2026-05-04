@@ -103,22 +103,6 @@ function syncCalendar() {
     return div;
 }
 
-    function sendDeskMessage() {
-        const text = sendInput.value.trim();
-        if (!text) return;
-
-        const t = getTimeStr();
-        msgList.appendChild(createMsgItem(text));
-        msgList.scrollTop = msgList.scrollHeight;
-
-        setTimeout(() => {
-            // msgList.appendChild(createMsgItem('Desk', 'av-desk', 'Message received', getTimeStr(), true));
-            msgList.scrollTop = msgList.scrollHeight;
-        }, 600);
-
-        sendInput.value = '';
-    }
-
     sendBtn.addEventListener('click', sendDeskMessage);
     sendInput.addEventListener('keypress', e => {
         if (e.key === 'Enter') sendDeskMessage();
