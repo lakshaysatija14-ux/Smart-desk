@@ -102,6 +102,14 @@ function syncCalendar() {
 
     return div;
 }
+function sendDeskMessage() {
+    const text = sendInput.value.trim();
+    if (!text) return;
+
+    msgList.appendChild(createMsgItem(text));
+    msgList.scrollTop = msgList.scrollHeight;
+    sendInput.value = '';
+}
 
     sendBtn.addEventListener('click', sendDeskMessage);
     sendInput.addEventListener('keypress', e => {
