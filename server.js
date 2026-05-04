@@ -28,9 +28,8 @@ function syncMessages() {
     if (!msgListEl) return;
 
     const msgs = Array.from(msgListEl.querySelectorAll('.msg-item')).map(msg => ({
-        text: msg.querySelector('.clean-msg') 
-            ? msg.querySelector('.clean-msg').innerText 
-            : ''
+        text: msg.querySelector('.msg-body')?.innerText.trim() || '',
+        time: msg.querySelector('.msg-time-tag')?.innerText.trim() || ''
     }));
 
     syncWithHardware({ deskMessages: msgs });
@@ -96,11 +95,12 @@ function syncCalendar() {
     div.innerHTML = `
         <div class="clean-msg">
             <span class="msg-body">${text}</span>
-            <div style="font-size:11px; opacity:0.7; margin-top:4px;">${time}</div>
+            <span class="msg-time-tag" style="display:block; font-size:11px; opacity:0.7; margin-top:4px;">${time}</span>
         </div>
     `;
     return div;
 }
+
 function sendDeskMessage() {
     const text = sendInput.value.trim();
     if (!text) return;
