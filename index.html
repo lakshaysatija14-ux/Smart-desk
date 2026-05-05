@@ -907,13 +907,22 @@ function addBubble(text, who){
   list.scrollTop = list.scrollHeight;
 }
 
-function sendDeskMsg(){
+async function sendDeskMsg(){
   const inp = document.getElementById('deskInput');
   const text = inp.value.trim();
   if(!text) return;
+
+  // UI me show
   addBubble(text, 'you');
   inp.value = '';
-  // Desk auto-reply
+
+  // 👉 BACKEND CALL
+  await fetch('https://smartdesk-backend-lovat.vercel.app/api/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: text })
+  });
+
   setTimeout(() => addBubble('✓ Message received', 'desk'), 400);
 }
 
@@ -930,6 +939,19 @@ function toggleDark(){document.body.style.filter=document.body.style.filter==='i
 function showHelp(){
   alert('Smart Desk Help\n\n🔗 Google Calendar Sync\n  → Click "Connect Google" in the calendar\n  → Allow permissions in the Google popup\n  → Your events appear instantly\n\n📅 Calendar\n  → Click any date to view/add/delete events\n  → Indian festivals auto-shown (2025–2027)\n\n✅ Tasks, ⏰ Alarm, 📨 Messages work as usual');
 }
+  async function loadMessages(){
+  const res = await fetch('https://smartdesk-backend-lovat.vercel.app/api/messages');
+  const data = await res.json();
+
+  const list = document.getElementById('msgList');
+  list.innerHTML = '';
+
+  data.forEach(msg => {
+    addBubble(msg.message, 'you');
+  });
+}
+
+window.addEventListener('load', loadMessages);
 </script>
 <script src="server.js"></script>
 </body>
