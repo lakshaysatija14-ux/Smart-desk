@@ -501,6 +501,7 @@ setInterval(tick,1000); tick();
 
 // ── QUOTES (full list from first file) ────────
 let isFetchingQuote = false;
+let lastQuote = "";
 
 async function refreshQuote() {
   if (isFetchingQuote) return;
@@ -514,32 +515,35 @@ async function refreshQuote() {
   qa.style.opacity = '0';
 
   try {
-    const res = await fetch('https://api.quotable.io/random');
+    const res = await fetch('https://zenquotes.io/api/random');
     const data = await res.json();
 
-    setTimeout(() => {
-      qt.textContent = `"${data.content}"`;
-      qa.textContent = `— ${data.author}`;
+    const quote = data[0];
 
-      qt.style.opacity = '1';
-      qa.style.opacity = '1';
-
+    // prevent immediate repeat
+    if (quote.q === lastQuote) {
       isFetchingQuote = false;
-    }, 300);
+      return refreshQuote();
+    }
+
+    lastQuote = quote.q;
+
+    // directly update (no timeout)
+    qt.textContent = `"${quote.q}"`;
+    qa.textContent = `— ${quote.a}`;
 
   } catch (err) {
     console.error(err);
 
-    setTimeout(() => {
-      qt.textContent = `"Stay positive, work hard, make it happen."`;
-      qa.textContent = `— Unknown`;
-
-      qt.style.opacity = '1';
-      qa.style.opacity = '1';
-
-      isFetchingQuote = false;
-    }, 300);
+    qt.textContent = `"Stay positive, work hard, make it happen."`;
+    qa.textContent = `— Unknown`;
   }
+
+  // fade in
+  qt.style.opacity = '1';
+  qa.style.opacity = '1';
+
+  isFetchingQuote = false;
 }
 // ── FESTIVALS DB ──────────────────────────────
 const F={
