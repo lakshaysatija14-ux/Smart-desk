@@ -500,8 +500,8 @@ function tick() {
 setInterval(tick,1000); tick();
 
 // ── QUOTES (full list from first file) ────────
+let usedQuotes = new Set();
 let isFetchingQuote = false;
-let lastQuote = "";
 
 async function refreshQuote() {
   if (isFetchingQuote) return;
@@ -515,24 +515,48 @@ async function refreshQuote() {
   qa.style.opacity = '0';
 
   try {
-    const res = await fetch('https://zenquotes.io/api/random');
+    // Fetch multiple quotes at once
+    const res = await fetch('https://type.fit/api/quotes');
     const data = await res.json();
 
-    const quote = data[0];
+    let randomQuote;
 
-    // prevent immediate repeat
-    if (quote.q === lastQuote) {
-      isFetchingQuote = false;
-      return refreshQuote();
+    // Keep picking until we get a new one
+    do {
+      randomQuote = data[Math.floor(Math.random() * data.length)];
+    } while (usedQuotes.has(randomQuote.text));
+
+    // Save used quote
+    usedQuotes.add(randomQuote.text);
+
+    // If all used, reset (optional safety)
+    if (usedQuotes.size > 1000) {
+      usedQuotes.clear();
     }
 
-    lastQuote = quote.q;
-  }
-  // fade in
-  qt.style.opacity = '1';
-  qa.style.opacity = '1';
+    setTimeout(() => {
+      qt.textContent = `"${randomQuote.text}"`;
+      qa.textContent = `— ${randomQuote.author || "Unknown"}`;
 
-  isFetchingQuote = false;
+      qt.style.opacity = '1';
+      qa.style.opacity = '1';
+
+      isFetchingQuote = false;
+    }, 300);
+
+  } catch (err) {
+    console.error(err);
+
+    setTimeout(() => {
+      qt.textContent = `"Stay positive, work hard, make it happen."`;
+      qa.textContent = `— Unknown`;
+
+      qt.style.opacity = '1';
+      qa.style.opacity = '1';
+
+      isFetchingQuote = false;
+    }, 300);
+  }
 }
 // ── FESTIVALS DB ──────────────────────────────
 const F={
