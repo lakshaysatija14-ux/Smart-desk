@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Desk Dashboard</title>
@@ -368,6 +369,10 @@
                 <div class="cal-header">
                     <div class="card-title"><i class="fa-solid fa-calendar-days" style="color: var(--blue);"></i> Calendar — April 2026</div>
                     <div class="cal-controls">
+                        <button onclick="connectGoogle()" 
+                        style="background:#4285f4;color:white;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;">
+                        Connect Google
+                        </button>
                         <button class="btn-cal"><i class="fa-solid fa-chevron-left"></i> <i class="fa-solid fa-chevron-right"></i></button>
                         <button class="btn-cal active" style="background: rgba(59, 130, 246, 0.2); color: #fff;">Today</button>
                         <div style="display: flex; background: rgba(255,255,255,0.05); border-radius: 8px; margin-left: 10px;">
@@ -421,7 +426,44 @@
     </div>
     <script src="server.js"></script>
 <script>
-const calendarGrid = document.getElementById("calendarGrid");
+    let tokenClient;
+let accessToken = null;
+
+function connectGoogle() {
+    tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: "https://www.googleapis.com/auth/calendar.readonly",
+        callback: (response) => {
+            accessToken = response.access_token;
+            alert("Google Connected ✅");
+            loadGoogleEvents();
+        }
+    });
+
+    tokenClient.requestAccessToken();
+}
+    async function loadGoogleEvents() {
+    if (!accessToken) return;
+
+    const res = await fetch(
+        "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+        {
+            headers: {
+                Authorization: "Bearer " + accessToken
+            }
+        }
+    );
+
+    const data = await res.json();
+
+    console.log("Google Events:", data.items);
+
+    data.items.forEach(event => {
+        console.log(event.summary);
+    });
+}
+    const GOOGLE_CLIENT_ID = '1030189405592-317rd184eqf01pt008kk95ah44falr1n.apps.googleusercontent.com';
+    const calendarGrid = document.getElementById("calendarGrid");
 
 function generateCalendar() {
     const now = new Date();
