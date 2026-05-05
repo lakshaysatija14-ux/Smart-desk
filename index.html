@@ -463,7 +463,11 @@ if (!accessToken) return;
     console.log("Events:", data.items);
 
     data.items.forEach(event => {
-        if (!event.start || !event.start.dateTime) return;
+        if (!event.start) return;
+
+const date = event.start.dateTime 
+    ? new Date(event.start.dateTime).getDate()
+    : new Date(event.start.date).getDate();
 
         const date = new Date(event.start.dateTime).getDate();
         const cell = document.querySelector(`[data-date="${date}"]`);
