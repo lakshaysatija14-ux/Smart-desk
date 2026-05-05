@@ -435,7 +435,7 @@ let accessToken = null;
 function connectGoogle() {
     tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: GOOGLE_CLIENT_ID,
-        scope: "https://www.googleapis.com/auth/calendar.readonly",
+        scope: "https://www.googleapis.com/auth/calendar",
         callback: (response) => {
             accessToken = response.access_token;
             alert("Google Connected ✅");
@@ -447,38 +447,41 @@ function connectGoogle() {
 }
 
 // 🔵 LOAD EVENTS
-async function loadGoogleEvents() {
-if (!accessToken) return;
-    const res = await fetch(
+async function addEventToGoogle(summary, date) {
+    if (!accessToken) return;
+
+    const now = new Date();
+const eventDate = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    date
+);
+
+const event = {
+    summary: summary,
+    start: {
+        dateTime: eventDate.toISOString(),
+        timeZone: "Asia/Kolkata"
+    },
+    end: {
+        dateTime: new Date(eventDate.getTime() + 60 * 60 * 1000).toISOString(),
+        timeZone: "Asia/Kolkata"
+    }
+};
+
+    await fetch(
         "https://www.googleapis.com/calendar/v3/calendars/primary/events",
         {
+            method: "POST",
             headers: {
-                Authorization: "Bearer " + accessToken
-            }
+                Authorization: "Bearer " + accessToken,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(event)
         }
     );
 
-    const data = await res.json();
-
-    console.log("Events:", data.items);
-
-    data.items.forEach(event => {
-        if (!event.start) return;
-
-const date = event.start.dateTime 
-    ? new Date(event.start.dateTime).getDate()
-    : new Date(event.start.date).getDate();
-
-        const date = new Date(event.start.dateTime).getDate();
-        const cell = document.querySelector(`[data-date="${date}"]`);
-
-        if (cell) {
-            cell.innerHTML += `
-                <div class="event-tag tag-blue">${event.summary}</div>
-            `;
-            cell.classList.add("has-event");
-        }
-    });
+    alert("Event added to Google Calendar 🚀");
 }
 
 // 🔵 CALENDAR GENERATION
@@ -521,12 +524,51 @@ document.addEventListener("click", function(e) {
         const eventText = prompt("Enter Event:");
         if (!eventText) return;
 
+        const selectedDate = e.target.getAttribute("data-date");
+
+        // UI me add
         e.target.innerHTML += `
             <div class="event-tag tag-green">${eventText}</div>
         `;
         e.target.classList.add("has-event");
+
+        // Google Calendar me add
+        addEventToGoogle(eventText, selectedDate);
     }
 });
+    async function loadGoogleEvents() {
+    if (!accessToken) return;
+
+    const res = await fetch(
+        "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+        {
+            headers: {
+                Authorization: "Bearer " + accessToken
+            }
+        }
+    );
+
+    const data = await res.json();
+
+    console.log("Events:", data.items);
+
+    data.items.forEach(event => {
+        if (!event.start) return;
+
+        const date = event.start.dateTime 
+            ? new Date(event.start.dateTime).getDate()
+            : new Date(event.start.date).getDate();
+
+        const cell = document.querySelector(`[data-date="${date}"]`);
+
+        if (cell) {
+            cell.innerHTML += `
+                <div class="event-tag tag-blue">${event.summary}</div>
+            `;
+            cell.classList.add("has-event");
+        }
+    });
+}
     
 </script>
 </body>
