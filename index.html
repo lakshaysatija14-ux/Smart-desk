@@ -500,31 +500,47 @@ function tick() {
 setInterval(tick,1000); tick();
 
 // ── QUOTES (full list from first file) ────────
-const QQ=[
-  {q:'"The secret of getting ahead is getting started."',a:'— Mark Twain'},
-  {q:'"Get up sucker and fight. Get up and fight."',a:'— Muhammad Ali'},
-  {q:'"It does not matter how slowly you go as long as you do not stop."',a:'— Confucius'},
-  {q:'"The only way to do great work is to love what you do."',a:'— Steve Jobs'},
-  {q:'"In the middle of every difficulty lies opportunity."',a:'— Albert Einstein'},
-  {q:'"Karo ya maro — do or die!"',a:'— Mahatma Gandhi'},
-  {q:'"Dream big and dare to fail."',a:'— Norman Vaughan'},
-  {q:'"Success is not final, failure is not fatal: it is the courage to continue that counts."',a:'— Winston Churchill'},
-  {q:'"The harder I work, the luckier I get."',a:'— Samuel Goldwyn'},
-  {q:'"Believe you can and you\'re halfway there."',a:'— Theodore Roosevelt'},
-];
-let qi = 0;
-function refreshQuote(){
+let isFetchingQuote = false;
+
+async function refreshQuote() {
+  if (isFetchingQuote) return;
+  isFetchingQuote = true;
+
   const qt = document.getElementById('quoteText');
   const qa = document.getElementById('quoteAuthor');
-  qt.style.opacity = '0'; qa.style.opacity = '0';
-  setTimeout(() => {
-    qi = (qi+1) % QQ.length;
-    qt.textContent = QQ[qi].q;
-    qa.textContent = QQ[qi].a;
-    qt.style.opacity = '1'; qa.style.opacity = '1';
-  }, 350);
-}
 
+  // fade out
+  qt.style.opacity = '0';
+  qa.style.opacity = '0';
+
+  try {
+    const res = await fetch('https://api.quotable.io/random');
+    const data = await res.json();
+
+    setTimeout(() => {
+      qt.textContent = `"${data.content}"`;
+      qa.textContent = `— ${data.author}`;
+
+      qt.style.opacity = '1';
+      qa.style.opacity = '1';
+
+      isFetchingQuote = false;
+    }, 300);
+
+  } catch (err) {
+    console.error(err);
+
+    setTimeout(() => {
+      qt.textContent = `"Stay positive, work hard, make it happen."`;
+      qa.textContent = `— Unknown`;
+
+      qt.style.opacity = '1';
+      qa.style.opacity = '1';
+
+      isFetchingQuote = false;
+    }, 300);
+  }
+}
 // ── FESTIVALS DB ──────────────────────────────
 const F={
   '01-13':[{name:'Lohri 🔥',color:'#f97316',type:'festival'}],
@@ -801,7 +817,9 @@ renderCal();
 window.addEventListener('load',()=>{
   if(typeof google!=='undefined') initGCal();
   else{const s=document.querySelector('script[src*="gsi"]');if(s)s.addEventListener('load',initGCal);}
+  refreshQuote();
 });
+  
 
 // ── TO-DO ─────────────────────────────────────
 let tasks=JSON.parse(localStorage.getItem('sd_tasks')||'[]');
