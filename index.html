@@ -527,18 +527,7 @@ async function refreshQuote() {
     }
 
     lastQuote = quote.q;
-
-    // directly update (no timeout)
-    qt.textContent = `"${quote.q}"`;
-    qa.textContent = `— ${quote.a}`;
-
-  } catch (err) {
-    console.error(err);
-
-    qt.textContent = `"Stay positive, work hard, make it happen."`;
-    qa.textContent = `— Unknown`;
   }
-
   // fade in
   qt.style.opacity = '1';
   qa.style.opacity = '1';
