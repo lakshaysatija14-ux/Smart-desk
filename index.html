@@ -426,9 +426,12 @@
     </div>
     <script src="server.js"></script>
 <script>
-    let tokenClient;
+    const GOOGLE_CLIENT_ID = '1030189405592-317rd184eqf01pt008kk95ah44falr1n.apps.googleusercontent.com';
+
+let tokenClient;
 let accessToken = null;
 
+// 🔵 CONNECT GOOGLE
 function connectGoogle() {
     tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: GOOGLE_CLIENT_ID,
@@ -442,7 +445,86 @@ function connectGoogle() {
 
     tokenClient.requestAccessToken();
 }
-    async function loadGoogleEvents() {
+
+// 🔵 LOAD EVENTS
+async function loadGoogleEvents() {
+    if (!accessToken) return;
+
+    const res = await fetch(
+        "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+        {
+            headers: {
+                Authorization: "Bearer " + accessToken
+            }
+        }
+    );
+
+    const data = await res.json();
+
+    console.log("Events:", data.items);
+
+    data.items.forEach(event => {
+        if (!event.start || !event.start.dateTime) return;
+
+        const date = new Date(event.start.dateTime).getDate();
+        const cell = document.querySelector(`[data-date="${date}"]`);
+
+        if (cell) {
+            cell.innerHTML += `
+                <div class="event-tag tag-blue">${event.summary}</div>
+            `;
+            cell.classList.add("has-event");
+        }
+    });
+}
+
+// 🔵 CALENDAR GENERATION
+const calendarGrid = document.getElementById("calendarGrid");
+
+function generateCalendar() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+
+    calendarGrid.innerHTML = "";
+
+    const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    days.forEach(day => {
+        calendarGrid.innerHTML += `<div class="cal-day-name">${day}</div>`;
+    });
+
+    for (let i = 0; i < firstDay; i++) {
+        calendarGrid.innerHTML += `<div class="cal-date"></div>`;
+    }
+
+    for (let d = 1; d <= totalDays; d++) {
+        const isToday = d === now.getDate() ? "active" : "";
+        calendarGrid.innerHTML += `
+            <div class="cal-date curr-month ${isToday}" data-date="${d}">
+                ${d}
+            </div>
+        `;
+    }
+}
+
+generateCalendar();
+
+// 🔵 MANUAL EVENT ADD
+document.addEventListener("click", function(e) {
+    if (e.target.classList.contains("cal-date")) {
+        const eventText = prompt("Enter Event:");
+        if (!eventText) return;
+
+        e.target.innerHTML += `
+            <div class="event-tag tag-green">${eventText}</div>
+        `;
+        e.target.classList.add("has-event");
+    }
+});
+} {
     if (!accessToken) return;
 
     const res = await fetch(
