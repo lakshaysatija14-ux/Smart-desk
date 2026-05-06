@@ -883,7 +883,7 @@
         list.scrollTop = list.scrollHeight;
       }
 
-      function sendDeskMsg() {
+      async function sendDeskMsg() {
   const inp = document.getElementById('deskInput');
   const text = inp.value.trim();
 
@@ -892,18 +892,50 @@
   // frontend pe show
   addBubble(text, 'you');
 
-  // backend pe bhejo
-  saveToBackend('message', {
-    message: text
-  });
+  const now = new Date();
+
+  const time =
+    now.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+  try {
+
+    // backend pe exact backend format me bhejo
+    const response = await fetch('https://smartdesk-backend-lovat.vercel.app/api/data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+
+      body: JSON.stringify({
+        deskMessages: [
+          {
+            time: time,
+            text: text
+          }
+        ]
+      })
+    });
+
+    const result = await response.json();
+
+    console.log('Message Saved:', result);
+
+    setTimeout(() => {
+      addBubble('✓ Message saved to database', 'desk');
+    }, 400);
+
+  } catch (error) {
+
+    console.error(error);
+
+    addBubble('❌ Failed to save message', 'desk');
+  }
 
   inp.value = '';
-
-  setTimeout(() => {
-    addBubble('✓ Message received', 'desk');
-  }, 400);
 }
-
       // ── MISC ──────────────────────────────────
       function toggleDark(){document.body.style.filter=document.body.style.filter==='invert(1)'?'':'invert(1)';}
       function showHelp(){
